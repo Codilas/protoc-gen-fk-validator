@@ -3,7 +3,7 @@ syntax = "proto3";
 package fk;
 
 option java_multiple_files = true;
-option go_package = "github.com/codilas/protoc-gen-fk-validator";
+option go_package = "github.com/codilas/protoc-gen-fk-validator/fk";
 
 import "google/protobuf/descriptor.proto";
 
