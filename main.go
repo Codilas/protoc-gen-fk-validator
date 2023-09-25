@@ -1,7 +1,7 @@
 package main
 
 import (
-	fk "protoc-gen-fk-validator/fk"
+	fk "github.com/codilas/protoc-gen-fk-validator/fk"
 
 	"golang.org/x/text/cases"
 	"golang.org/x/text/language"
