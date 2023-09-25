@@ -1,4 +1,4 @@
-module protoc-gen-fk-validator
+module github.com/codilas/protoc-gen-fk-validator
 
 go 1.18
 
