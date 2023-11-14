@@ -73,6 +73,46 @@ func genTypeMethod[T any](g *protogen.GeneratedFile, m *protogen.Message, kind p
 					g.P("}")
 				}
 			}
+		} else if field.Desc.Kind() == protoreflect.MessageKind {
+			for _, f := range field.Message.Fields {
+				options := f.Desc.Options().(*descriptorpb.FieldOptions)
+				relation := proto.GetExtension(options, fk.E_ForeignKey).(string)
+				if f.Desc.Kind() == kind {
+					if relation != "" {
+						if _, found := relationMap[relation]; !found {
+							g.P(relation, " := make(map[", kind.String(), "]struct{})")
+							relationMap[relation] = relation
+						}
+						if field.Desc.IsList() {
+							g.P("for _, nm := range m.Get", field.GoName, "() {")
+							if f.Desc.IsList() {
+								g.P("for _, i := range nm.Get", f.GoName, "() {")
+								g.P("if i != ", zeroValue, " {")
+								g.P(relation, "[i] = struct{}{}")
+								g.P("}")
+								g.P("}")
+							} else {
+								g.P("if nm.Get", f.GoName, "() != ", zeroValue, " {")
+								g.P(relation, "[nm.Get", f.GoName, "()] = struct{}{}")
+								g.P("}")
+							}
+							g.P("}")
+						} else {
+							if f.Desc.IsList() {
+								g.P("for _, i := range m.Get", field.GoName, "().Get", f.GoName, "() {")
+								g.P("if i != ", zeroValue, " {")
+								g.P(relation, "[i] = struct{}{}")
+								g.P("}")
+								g.P("}")
+							} else {
+								g.P("if m.Get", field.GoName, "().Get", f.GoName, "() != ", zeroValue, " {")
+								g.P(relation, "[m.Get", field.GoName, "().Get", f.GoName, "()] = struct{}{}")
+								g.P("}")
+							}
+						}
+					}
+				}
+			}
 		}
 	}
 	g.P("")
